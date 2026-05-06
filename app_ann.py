@@ -43,8 +43,9 @@ st.markdown(f"""
 
 /* INSIGHTS */
 .insight-text {{
-    font-size: 13px;
-    margin-bottom: 6px;
+    font-size: 11px;
+    margin-bottom: 4px;
+    opacity: 0.85;
 }}
 
 h1, h2, h3 {{color:white}}
