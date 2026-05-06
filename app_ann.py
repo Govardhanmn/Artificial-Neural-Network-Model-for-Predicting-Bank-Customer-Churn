@@ -112,7 +112,7 @@ st.markdown("""
     margin-bottom:.8rem;
 }
 .hero-title {
-    font-size:3.4rem; font-weight:800;
+    font-size:5.4rem; font-weight:800;
     background:linear-gradient(90deg,#63a3ff,#a78bfa,#f6ad55);
     -webkit-background-clip:text; -webkit-text-fill-color:transparent;
     background-clip:text; line-height:1.15; margin-bottom:.35rem;
