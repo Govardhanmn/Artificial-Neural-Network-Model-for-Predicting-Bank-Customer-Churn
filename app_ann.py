@@ -5,7 +5,7 @@ import joblib
 import plotly.graph_objects as go
 import base64, pathlib
 
-# ── CONFIG ─────────────────────────────────────────────
+# ── PAGE CONFIG ─────────────────────────────────────────
 st.set_page_config(page_title="Churn Intelligence", layout="wide")
 
 # ── BACKGROUND ─────────────────────────────────────────
@@ -31,6 +31,14 @@ st.markdown(f"""
     padding: 1.5rem 3rem;
 }}
 
+/* REMOVE EMPTY BLOCKS */
+div[data-testid="stHorizontalBlock"]:empty {{
+    display: none !important;
+}}
+div[data-testid="stVerticalBlock"]:empty {{
+    display: none !important;
+}}
+
 /* GLASS CARD */
 .glass {{
     background: rgba(255,255,255,0.06);
@@ -41,8 +49,8 @@ st.markdown(f"""
     box-shadow: 0 10px 35px rgba(0,0,0,0.5);
 }}
 
-/* KPI CARDS */
-.kpi {{
+/* KPI */
+.kpi-card {{
     background: rgba(255,255,255,0.05);
     border-radius: 16px;
     padding: 18px;
@@ -84,15 +92,30 @@ model, scaler = load_resources()
 st.markdown("<h1>🏦 Churn Intelligence</h1>", unsafe_allow_html=True)
 st.markdown("<p style='color:#94a3b8;'>AI-powered customer retention dashboard</p>", unsafe_allow_html=True)
 
-# ── INPUT + OUTPUT LAYOUT ──────────────────────────────
-left, right = st.columns([1, 1])
+# ── KPI CARDS ──────────────────────────────────────────
+k1, k2, k3, k4 = st.columns(4)
 
-# DEFAULT KPI VALUES
 risk = None
 active_flag = None
-num_products_val = None
 
-# ── INPUT PANEL ────────────────────────────────────────
+risk_val = "--"
+score_val = "--"
+activity_val = "--"
+product_val = "--"
+
+with k1:
+    kpi1 = st.empty()
+with k2:
+    kpi2 = st.empty()
+with k3:
+    kpi3 = st.empty()
+with k4:
+    kpi4 = st.empty()
+
+# ── MAIN LAYOUT ─────────────────────────────────────────
+left, right = st.columns([1, 1])
+
+# ── INPUT PANEL ─────────────────────────────────────────
 with left:
     st.markdown('<div class="glass">', unsafe_allow_html=True)
 
@@ -135,7 +158,7 @@ with right:
         risk = prob * 100
         churn = prob > 0.5
 
-        # PREMIUM GAUGE
+        # GAUGE
         color = "#ef4444" if churn else "#22c55e"
 
         fig = go.Figure(go.Indicator(
@@ -181,26 +204,19 @@ with right:
         if active_flag == 1:
             st.success("Active engagement")
 
+        # ── UPDATE KPI CARDS ─────────────────────────
+        risk_val = f"{risk:.1f}%"
+        score_val = f"{100-risk:.0f}"
+        activity_val = "Active" if active_flag == 1 else "Inactive"
+        product_val = f"{num_products}"
+
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ── KPI ROW (AFTER PREDICTION) ─────────────────────────
-st.markdown("###")
+# ── RENDER KPI CARDS ───────────────────────────────────
+kpi1.markdown(f"<div class='kpi-card'><div class='kpi-title'>Churn Risk</div><div class='kpi-value'>{risk_val}</div></div>", unsafe_allow_html=True)
 
-k1, k2, k3, k4 = st.columns(4)
+kpi2.markdown(f"<div class='kpi-card'><div class='kpi-title'>Customer Score</div><div class='kpi-value'>{score_val}</div></div>", unsafe_allow_html=True)
 
-risk_val = f"{risk:.1f}%" if risk else "--"
-score_val = f"{100-risk:.0f}" if risk else "--"
-activity_val = "Active" if active_flag == 1 else ("Inactive" if active_flag == 0 else "--")
-product_val = f"{num_products}" if submit else "--"
+kpi3.markdown(f"<div class='kpi-card'><div class='kpi-title'>Activity</div><div class='kpi-value'>{activity_val}</div></div>", unsafe_allow_html=True)
 
-with k1:
-    st.markdown(f"<div class='kpi'><div class='kpi-title'>Churn Risk</div><div class='kpi-value'>{risk_val}</div></div>", unsafe_allow_html=True)
-
-with k2:
-    st.markdown(f"<div class='kpi'><div class='kpi-title'>Customer Score</div><div class='kpi-value'>{score_val}</div></div>", unsafe_allow_html=True)
-
-with k3:
-    st.markdown(f"<div class='kpi'><div class='kpi-title'>Activity</div><div class='kpi-value'>{activity_val}</div></div>", unsafe_allow_html=True)
-
-with k4:
-    st.markdown(f"<div class='kpi'><div class='kpi-title'>Products</div><div class='kpi-value'>{product_val}</div></div>", unsafe_allow_html=True)
+kpi4.markdown(f"<div class='kpi-card'><div class='kpi-title'>Products</div><div class='kpi-value'>{product_val}</div></div>", unsafe_allow_html=True)
