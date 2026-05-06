@@ -104,11 +104,14 @@ st.markdown("""
 .badge {
     display:inline-block;
     background:rgba(56,100,220,0.18);
-    border:1px solid rgba(99,163,255,0.3);
+    border:1px solid rgba(99,163,163,0.3);
     color:#63a3ff;
-    font-size:.85rem; font-weight:700;
-    letter-spacing:.1em; text-transform:uppercase;
-    padding:.35rem 1rem; border-radius:20px;
+    font-size:1.25rem;   /* increased from .85rem */
+    font-weight:800;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    padding:.5rem 1.2rem;
+    border-radius:20px;
     margin-bottom:.8rem;
 }
 .hero-title {
