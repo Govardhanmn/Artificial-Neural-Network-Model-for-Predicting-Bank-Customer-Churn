@@ -152,6 +152,7 @@ with right:
 
         # ── INSIGHTS ─────────────────────────────
         with i_col:
+            st.markdown("<br><br><br>", unsafe_allow_html=True)
             st.markdown("### 📊 Insights")
 
             def insight(msg, color):
