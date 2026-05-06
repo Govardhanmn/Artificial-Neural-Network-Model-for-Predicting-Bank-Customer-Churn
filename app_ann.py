@@ -151,9 +151,7 @@ with right:
 
         g1, g2, g3 = st.columns([1,2.5,1])
         with g2:
-            st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
             st.plotly_chart(fig, use_container_width=True)
-            st.markdown("</div>", unsafe_allow_html=True)
 
         # ── RESULT ────────────────────────────────────
         if churn:
