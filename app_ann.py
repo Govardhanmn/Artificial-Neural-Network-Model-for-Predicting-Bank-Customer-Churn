@@ -66,10 +66,20 @@ div[data-testid="stColumn"]:empty {{
     font-weight: 600;
 }}
 
+/* GLASS CARD */
+.glass-card {{
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    background: rgba(255,255,255,0.05);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}}
+
 /* INSIGHTS */
 .insight-text {{
     font-size: 13px;
-    color: #cbd5e1;
     margin-bottom: 4px;
 }}
 
@@ -114,7 +124,7 @@ kpi4 = k4.empty()
 # ── MAIN GRID ──────────────────────────────────────────
 left, right = st.columns([1,1])
 
-# ── INPUT SECTION (SIDE-BY-SIDE) ───────────────────────
+# ── INPUT SECTION ──────────────────────────────────────
 with left:
     st.subheader("Customer Details")
 
@@ -153,25 +163,42 @@ with right:
         prob = model.predict(scaler.transform(X))[0][0]
         risk = prob * 100
 
-        # ── GAUGE (CENTERED & SMALLER) ─────────────────
+        # ── PREMIUM GAUGE ─────────────────────────────
         fig = go.Figure(go.Indicator(
             mode="gauge+number",
             value=risk,
-            number={"suffix": "%"},
-            gauge={"axis": {"range": [0, 100]}}
+            number={"suffix": "%", "font": {"size": 36}},
+            gauge={
+                "axis": {"range": [0, 100]},
+                "bar": {"thickness": 0.25},
+                "steps": [
+                    {"range": [0, 30], "color": "#22c55e"},
+                    {"range": [30, 60], "color": "#facc15"},
+                    {"range": [60, 100], "color": "#ef4444"},
+                ],
+                "threshold": {
+                    "line": {"color": "white", "width": 3},
+                    "thickness": 0.8,
+                    "value": risk
+                }
+            }
         ))
 
         fig.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
             font={"color": "white"},
-            height=280
+            height=360,
+            margin=dict(t=20, b=20, l=20, r=20)
         )
 
-        g1, g2, g3 = st.columns([1,2,1])
-        with g2:
-            st.plotly_chart(fig, use_container_width=True)
+        g1, g2, g3 = st.columns([1, 2.5, 1])
 
-        # ── INSIGHTS (SMALL FONT) ──────────────────────
+        with g2:
+            st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
+            st.plotly_chart(fig, use_container_width=True)
+            st.markdown("</div>", unsafe_allow_html=True)
+
+        # ── INSIGHTS ───────────────────────────────────
         st.markdown("### 📊 Insights")
 
         def insight(msg, type="normal"):
