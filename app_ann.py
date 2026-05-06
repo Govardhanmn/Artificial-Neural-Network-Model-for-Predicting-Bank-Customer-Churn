@@ -54,12 +54,14 @@ label {{color:#cbd5e1 !important}}
 """, unsafe_allow_html=True)
 
 # ── LOAD MODEL ─────────────────────────────────────────
-@st.cache_resource
-def load():
-    return (
-        tf.keras.models.load_model("final_ann_model.h5"),
-        joblib.load("scaler_ann.pkl")
-    )
+@st.cache_resource(show_spinner=False)
+def load_resources():
+    try:
+        model  = tf.keras.models.load_model("final_ann_model.h5", compile=False)
+        scaler = joblib.load("scaler_ann.pkl")
+        return model, scaler, None
+    except Exception as e:
+        return None, None, str(e)
 
 model, scaler = load()
 
