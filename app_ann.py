@@ -106,7 +106,7 @@ kpi4 = k4.empty()
 # ── MAIN GRID ──────────────────────────────────────────
 left, right = st.columns([1,1])
 
-# ── INPUT SECTION (NO BOX) ─────────────────────────────
+# ── INPUT SECTION ──────────────────────────────────────
 with left:
     st.subheader("Customer Details")
 
@@ -125,7 +125,7 @@ with left:
 
     predict = st.button("🚀 Predict")
 
-# ── OUTPUT SECTION (NO BOX) ────────────────────────────
+# ── OUTPUT SECTION ─────────────────────────────────────
 with right:
     if predict:
         gender_val = 1 if gender == "Male" else 0
@@ -141,7 +141,7 @@ with right:
         prob = model.predict(scaler.transform(X))[0][0]
         risk = prob * 100
 
-        # GAUGE
+        # ── GAUGE ───────────────────────────────────────
         fig = go.Figure(go.Indicator(
             mode="gauge+number",
             value=risk,
@@ -156,7 +156,44 @@ with right:
 
         st.plotly_chart(fig, use_container_width=True)
 
-        # KPI UPDATE
+        # ── INSIGHTS ────────────────────────────────────
+        st.markdown("### 📊 Insights")
+
+        if risk > 60:
+            st.error("⚠️ High churn risk detected. Immediate retention action recommended.")
+        elif risk > 30:
+            st.warning("⚡ Moderate churn risk. Monitor engagement.")
+        else:
+            st.success("✅ Customer is stable.")
+
+        if age > 50:
+            st.warning("Older customers tend to churn more.")
+
+        if num_products == 1:
+            st.warning("Only 1 product → low engagement.")
+
+        if num_products >= 3:
+            st.success("Multiple products → strong engagement.")
+
+        if active_flag == 0:
+            st.error("Inactive customer → major churn driver.")
+
+        if active_flag == 1:
+            st.success("Active customer → retention positive.")
+
+        if balance < 10000:
+            st.warning("Low balance → weak engagement.")
+
+        if balance > 100000:
+            st.success("High balance → valuable customer.")
+
+        if credit_score < 500:
+            st.error("Low credit score → risk factor.")
+
+        if credit_score > 700:
+            st.success("Good credit score → stable profile.")
+
+        # ── KPI UPDATE ──────────────────────────────────
         risk_val = f"{risk:.1f}%"
         score_val = f"{100-risk:.0f}"
         activity_val = "Active" if active_flag else "Inactive"
