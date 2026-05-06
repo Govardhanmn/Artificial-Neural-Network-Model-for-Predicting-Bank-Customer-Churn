@@ -41,19 +41,10 @@ st.markdown(f"""
 .kpi-title {{color:#94a3b8;font-size:13px}}
 .kpi-value {{color:white;font-size:24px;font-weight:600}}
 
-/* GLASS */
-.glass-card {{
-    backdrop-filter: blur(16px);
-    background: rgba(255,255,255,0.05);
-    border-radius: 16px;
-    padding: 20px;
-    border: 1px solid rgba(255,255,255,0.1);
-}}
-
 /* INSIGHTS */
 .insight-text {{
     font-size: 13px;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
 }}
 
 h1, h2, h3 {{color:white}}
@@ -83,7 +74,7 @@ risk_val, score_val, activity_val, product_val = "--","--","--","--"
 # ── MAIN GRID ──────────────────────────────────────────
 left, right = st.columns([1.1, 1])
 
-# ── INPUT FORM (FROM YOUR CODE) ────────────────────────
+# ── INPUT FORM ─────────────────────────────────────────
 with left:
     with st.form("churn_form"):
 
@@ -109,6 +100,7 @@ with left:
 with right:
     if submit:
 
+        # ── ENCODING ─────────────────────────────
         gender_val = 1 if gender == "Male" else 0
         geo_ger = 1 if geography == "Germany" else 0
         geo_spa = 1 if geography == "Spain" else 0
@@ -123,60 +115,67 @@ with right:
         risk = prob * 100
         churn = prob > 0.5
 
-        # ── PREMIUM GAUGE ─────────────────────────────
-        fig = go.Figure(go.Indicator(
-            mode="gauge+number",
-            value=risk,
-            number={"suffix": "%", "font": {"size": 38}},
-            gauge={
-                "axis": {"range": [0, 100]},
-                "bar": {"thickness": 0.3},
-                "steps": [
-                    {"range": [0, 30], "color": "#22c55e"},
-                    {"range": [30, 60], "color": "#facc15"},
-                    {"range": [60, 100], "color": "#ef4444"},
-                ],
-                "threshold": {
-                    "line": {"color": "white", "width": 3},
-                    "value": risk
+        # ── SIDE BY SIDE LAYOUT ───────────────────
+        g_col, i_col = st.columns([1.3, 1])
+
+        # ── SIMPLE CLEAN GAUGE ────────────────────
+        with g_col:
+            fig = go.Figure(go.Indicator(
+                mode="gauge+number",
+                value=risk,
+                number={
+                    "suffix": "%",
+                    "font": {"size": 36}
+                },
+                gauge={
+                    "axis": {"range": [0, 100]},
+                    "bar": {"color": "white", "thickness": 0.35},
+                    "bgcolor": "rgba(255,255,255,0.05)",
+                    "borderwidth": 0
                 }
-            }
-        ))
+            ))
 
-        fig.update_layout(
-            paper_bgcolor="rgba(0,0,0,0)",
-            height=380,
-            font={"color":"white"}
-        )
+            fig.update_layout(
+                paper_bgcolor="rgba(0,0,0,0)",
+                height=340,
+                margin=dict(t=20, b=20),
+                font={"color": "white"}
+            )
 
-        g1, g2, g3 = st.columns([1,2.5,1])
-        with g2:
             st.plotly_chart(fig, use_container_width=True)
 
-        # ── RESULT ────────────────────────────────────
-        if churn:
-            st.error(f"⚠️ High Churn Risk ({risk:.1f}%)")
-        else:
-            st.success(f"✅ Likely to Stay ({risk:.1f}%)")
+            # Result below gauge
+            if churn:
+                st.error(f"⚠️ High Churn Risk ({risk:.1f}%)")
+            else:
+                st.success(f"✅ Likely to Stay ({risk:.1f}%)")
 
-        # ── INSIGHTS (SMALL FONT) ─────────────────────
-        st.markdown("### 📊 Insights")
+        # ── INSIGHTS ─────────────────────────────
+        with i_col:
+            st.markdown("### 📊 Insights")
 
-        def insight(msg, color):
-            st.markdown(f"<div class='insight-text' style='color:{color}'>{msg}</div>", unsafe_allow_html=True)
+            def insight(msg, color):
+                st.markdown(
+                    f"<div class='insight-text' style='color:{color}'>{msg}</div>",
+                    unsafe_allow_html=True
+                )
 
-        if age > 50:
-            insight("Older customers have higher churn tendency", "#facc15")
-        if num_products == 1:
-            insight("Low product engagement", "#facc15")
-        if active_flag == 0:
-            insight("Inactive customer - HIGH RISK", "#ef4444")
-        if num_products >= 2:
-            insight("Good product engagement", "#22c55e")
-        if active_flag == 1:
-            insight("Active customer - strong retention", "#22c55e")
+            if age > 50:
+                insight("Older customers have higher churn tendency", "#facc15")
 
-        # ── KPI UPDATE ────────────────────────────────
+            if num_products == 1:
+                insight("Low product engagement", "#facc15")
+
+            if active_flag == 0:
+                insight("Inactive customer - HIGH RISK", "#ef4444")
+
+            if num_products >= 2:
+                insight("Good product engagement", "#22c55e")
+
+            if active_flag == 1:
+                insight("Active customer - strong retention", "#22c55e")
+
+        # ── KPI UPDATE ────────────────────────────
         risk_val = f"{risk:.1f}%"
         score_val = f"{100-risk:.0f}"
         activity_val = "Active" if active_flag else "Inactive"
