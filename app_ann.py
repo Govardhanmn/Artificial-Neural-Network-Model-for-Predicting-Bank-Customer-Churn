@@ -16,14 +16,14 @@ _bg_css = f"url('data:image/jpeg;base64,{_bg_b64}')" if _bg_b64 else "linear-gra
 st.markdown(f"""
 <style>
 
-/* REMOVE EMPTY BLOCKS */
+/* REMOVE EMPTY BOXES */
 div[data-testid="stHorizontalBlock"]:empty,
 div[data-testid="stVerticalBlock"]:empty,
 div[data-testid="stColumn"]:empty {{
     display: none !important;
 }}
 
-/* GLOBAL BACKGROUND */
+/* BACKGROUND */
 .stApp {{
     background: {_bg_css};
     background-size: cover;
@@ -66,12 +66,20 @@ div[data-testid="stColumn"]:empty {{
     font-weight: 600;
 }}
 
+/* INSIGHTS */
+.insight-text {{
+    font-size: 13px;
+    color: #cbd5e1;
+    margin-bottom: 4px;
+}}
+
+/* TEXT */
 h1 {{
     color: white;
 }}
 
 label {{
-    color: #cbd5f5 !important;
+    color: #cbd5e1 !important;
 }}
 
 </style>
@@ -106,7 +114,7 @@ kpi4 = k4.empty()
 # ── MAIN GRID ──────────────────────────────────────────
 left, right = st.columns([1,1])
 
-# ── INPUT SECTION (SIDE-BY-SIDE GRID) ──────────────────
+# ── INPUT SECTION (SIDE-BY-SIDE) ───────────────────────
 with left:
     st.subheader("Customer Details")
 
@@ -145,7 +153,7 @@ with right:
         prob = model.predict(scaler.transform(X))[0][0]
         risk = prob * 100
 
-        # ── GAUGE ───────────────────────────────────────
+        # ── GAUGE (CENTERED & SMALLER) ─────────────────
         fig = go.Figure(go.Indicator(
             mode="gauge+number",
             value=risk,
@@ -155,49 +163,65 @@ with right:
 
         fig.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
-            font={"color": "white"}
+            font={"color": "white"},
+            height=280
         )
 
-        st.plotly_chart(fig, use_container_width=True)
+        g1, g2, g3 = st.columns([1,2,1])
+        with g2:
+            st.plotly_chart(fig, use_container_width=True)
 
-        # ── INSIGHTS ────────────────────────────────────
+        # ── INSIGHTS (SMALL FONT) ──────────────────────
         st.markdown("### 📊 Insights")
 
+        def insight(msg, type="normal"):
+            color = {
+                "success": "#22c55e",
+                "warning": "#facc15",
+                "error": "#ef4444",
+                "normal": "#cbd5e1"
+            }[type]
+
+            st.markdown(
+                f"<div class='insight-text' style='color:{color}'>{msg}</div>",
+                unsafe_allow_html=True
+            )
+
         if risk > 60:
-            st.error("⚠️ High churn risk detected. Immediate retention action recommended.")
+            insight("⚠️ High churn risk detected. Immediate action needed.", "error")
         elif risk > 30:
-            st.warning("⚡ Moderate churn risk. Monitor engagement.")
+            insight("⚡ Moderate churn risk. Monitor customer.", "warning")
         else:
-            st.success("✅ Customer is stable.")
+            insight("✅ Customer is stable.", "success")
 
         if age > 50:
-            st.warning("Older customers tend to churn more.")
+            insight("Older customers show higher churn tendency.", "warning")
 
         if num_products == 1:
-            st.warning("Only 1 product → low engagement.")
+            insight("Low product engagement (1 product).", "warning")
 
         if num_products >= 3:
-            st.success("Multiple products → strong engagement.")
+            insight("Strong engagement (multiple products).", "success")
 
         if active_flag == 0:
-            st.error("Inactive customer → major churn driver.")
+            insight("Inactive customer is a major churn driver.", "error")
 
         if active_flag == 1:
-            st.success("Active customer → retention positive.")
+            insight("Active customer improves retention.", "success")
 
         if balance < 10000:
-            st.warning("Low balance → weak engagement.")
+            insight("Low balance indicates weak engagement.", "warning")
 
         if balance > 100000:
-            st.success("High balance → valuable customer.")
+            insight("High balance → high-value customer.", "success")
 
         if credit_score < 500:
-            st.error("Low credit score → risk factor.")
+            insight("Low credit score increases churn risk.", "error")
 
         if credit_score > 700:
-            st.success("Good credit score → stable profile.")
+            insight("Good credit score → stable profile.", "success")
 
-        # ── KPI UPDATE ──────────────────────────────────
+        # ── KPI UPDATE ────────────────────────────────
         risk_val = f"{risk:.1f}%"
         score_val = f"{100-risk:.0f}"
         activity_val = "Active" if active_flag else "Inactive"
