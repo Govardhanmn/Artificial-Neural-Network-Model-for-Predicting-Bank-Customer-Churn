@@ -43,8 +43,8 @@ st.markdown(f"""
 
 /* INSIGHTS */
 .insight-text {{
-    font-size: 11px;
-    margin-bottom: 4px;
+    font-size: 13px;
+    margin-bottom: 6px;
     opacity: 0.85;
 }}
 
@@ -154,7 +154,7 @@ with right:
         # ── INSIGHTS ─────────────────────────────
         with i_col:
             st.markdown("<br><br><br>", unsafe_allow_html=True)
-            st.markdown("### 📊 Insights")
+            st.markdown("#### 📊 Insights")
 
             def insight(msg, color):
                 st.markdown(
