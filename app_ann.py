@@ -5,7 +5,7 @@ import joblib
 import plotly.graph_objects as go
 import base64, pathlib
 
-# ── PAGE CONFIG ─────────────────────────────────────────
+# ── CONFIG ─────────────────────────────────────────────
 st.set_page_config(page_title="Churn Intelligence", layout="wide")
 
 # ── BACKGROUND ─────────────────────────────────────────
@@ -41,7 +41,7 @@ div[data-testid="stVerticalBlock"]:empty {{
 
 /* GLASS CARD */
 .glass {{
-    background: rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.05);
     backdrop-filter: blur(20px);
     border-radius: 20px;
     padding: 25px;
@@ -49,13 +49,38 @@ div[data-testid="stVerticalBlock"]:empty {{
     box-shadow: 0 10px 35px rgba(0,0,0,0.5);
 }}
 
-/* KPI */
+/* 🌈 KPI STRIPE STYLE */
 .kpi-card {{
-    background: rgba(255,255,255,0.05);
-    border-radius: 16px;
-    padding: 18px;
+    position: relative;
+    border-radius: 18px;
+    padding: 20px;
     text-align: center;
+    overflow: hidden;
+    background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(20px);
     border: 1px solid rgba(255,255,255,0.08);
+    transition: all 0.3s ease;
+}}
+
+.kpi-card::before {{
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 18px;
+    background: linear-gradient(120deg, var(--glow), #3b82f6, #a855f7);
+    opacity: 0.25;
+    filter: blur(20px);
+    z-index: 0;
+}}
+
+.kpi-card * {{
+    position: relative;
+    z-index: 2;
+}}
+
+.kpi-card:hover {{
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.6);
 }}
 
 .kpi-title {{
@@ -65,7 +90,7 @@ div[data-testid="stVerticalBlock"]:empty {{
 
 .kpi-value {{
     color: white;
-    font-size: 24px;
+    font-size: 26px;
     font-weight: 600;
 }}
 
@@ -103,14 +128,10 @@ score_val = "--"
 activity_val = "--"
 product_val = "--"
 
-with k1:
-    kpi1 = st.empty()
-with k2:
-    kpi2 = st.empty()
-with k3:
-    kpi3 = st.empty()
-with k4:
-    kpi4 = st.empty()
+with k1: kpi1 = st.empty()
+with k2: kpi2 = st.empty()
+with k3: kpi3 = st.empty()
+with k4: kpi4 = st.empty()
 
 # ── MAIN LAYOUT ─────────────────────────────────────────
 left, right = st.columns([1, 1])
@@ -204,7 +225,7 @@ with right:
         if active_flag == 1:
             st.success("Active engagement")
 
-        # ── UPDATE KPI CARDS ─────────────────────────
+        # KPI VALUES UPDATE
         risk_val = f"{risk:.1f}%"
         score_val = f"{100-risk:.0f}"
         activity_val = "Active" if active_flag == 1 else "Inactive"
@@ -212,8 +233,18 @@ with right:
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ── RENDER KPI CARDS ───────────────────────────────────
-kpi1.markdown(f"<div class='kpi-card'><div class='kpi-title'>Churn Risk</div><div class='kpi-value'>{risk_val}</div></div>", unsafe_allow_html=True)
+# ── KPI RENDER ─────────────────────────────────────────
+if risk:
+    if risk > 60:
+        glow = "#ef4444"
+    elif risk > 30:
+        glow = "#f59e0b"
+    else:
+        glow = "#22c55e"
+else:
+    glow = "#3b82f6"
+
+kpi1.markdown(f"<div class='kpi-card' style='--glow:{glow}'><div class='kpi-title'>Churn Risk</div><div class='kpi-value'>{risk_val}</div></div>", unsafe_allow_html=True)
 
 kpi2.markdown(f"<div class='kpi-card'><div class='kpi-title'>Customer Score</div><div class='kpi-value'>{score_val}</div></div>", unsafe_allow_html=True)
 
