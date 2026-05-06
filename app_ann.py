@@ -239,7 +239,7 @@ model, scaler, load_error = load_resources()
 st.markdown("""
 <div class="hero-wrap">
     <span class="hero-bank-icon">🏦</span>
-    <div class="badge">Customer Risk Intelligence</div>
+    <div class="badge">AI-Powered Risk Analytics</div>
     <p class="hero-title">Customer Churn Prediction System</p>
 </div>
 <div class="wave-line"></div>
