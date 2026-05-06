@@ -106,24 +106,28 @@ kpi4 = k4.empty()
 # ── MAIN GRID ──────────────────────────────────────────
 left, right = st.columns([1,1])
 
-# ── INPUT SECTION ──────────────────────────────────────
+# ── INPUT SECTION (SIDE-BY-SIDE GRID) ──────────────────
 with left:
     st.subheader("Customer Details")
 
-    geography = st.selectbox("Geography", ["France", "Germany", "Spain"])
-    gender = st.selectbox("Gender", ["Male", "Female"])
-    age = st.slider("Age", 18, 95, 35)
+    col1, col2 = st.columns(2)
 
-    credit_score = st.slider("Credit Score", 300, 850, 650)
-    balance = st.number_input("Balance", 0.0, 300000.0, 75000.0)
-    salary = st.number_input("Salary", 0.0, 300000.0, 60000.0)
+    with col1:
+        geography = st.selectbox("Geography", ["France", "Germany", "Spain"])
+        age = st.slider("Age", 18, 95, 35)
+        balance = st.number_input("Balance", 0.0, 300000.0, 75000.0)
+        tenure = st.slider("Tenure", 0, 10, 5)
+        has_card = st.radio("Credit Card", ["Yes", "No"])
 
-    tenure = st.slider("Tenure", 0, 10, 5)
-    num_products = st.selectbox("Products", [1,2,3,4])
-    has_card = st.radio("Credit Card", ["Yes", "No"], horizontal=True)
-    active = st.radio("Active Member", ["Yes", "No"], horizontal=True)
+    with col2:
+        gender = st.selectbox("Gender", ["Male", "Female"])
+        credit_score = st.slider("Credit Score", 300, 850, 650)
+        salary = st.number_input("Salary", 0.0, 300000.0, 60000.0)
+        num_products = st.selectbox("Products", [1,2,3,4])
+        active = st.radio("Active Member", ["Yes", "No"])
 
-    predict = st.button("🚀 Predict")
+    st.markdown("<br>", unsafe_allow_html=True)
+    predict = st.button("🚀 Predict", use_container_width=True)
 
 # ── OUTPUT SECTION ─────────────────────────────────────
 with right:
